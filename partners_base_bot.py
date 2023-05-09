@@ -5,7 +5,7 @@ import datetime
 import time
 
 # загружаем телебот
-with open('bot_token_test.txt', 'r') as file:
+with open('bot_token.txt', 'r') as file:
     token = file.readline().strip()
 bot = telebot.TeleBot(token)
 # https://xn--80affa3aj0al.xn--80asehdb/#@sp_base_bot
