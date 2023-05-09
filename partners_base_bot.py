@@ -5,7 +5,7 @@ import datetime
 import time
 
 # загружаем телебот
-with open('bot_token.TXT', 'r') as file:
+with open('bot_token_test.txt', 'r') as file:
     token = file.readline().strip()
 bot = telebot.TeleBot(token)
 # https://xn--80affa3aj0al.xn--80asehdb/#@sp_base_bot
@@ -27,6 +27,7 @@ os.system(cmd)
 # определяем абсолютный путь к файлам
 data_import = os.getcwd().replace('\\', '/') + '/' + 'import.csv'
 data_export = os.getcwd().replace('\\', '/') + '/' + 'export_partners.csv'
+data_export_xlsx = os.getcwd().replace('\\', '/') + '/' + 'export_partners.xlsx'
 txt_input = ''
 
 # ищем рабочую базу, обновления, резервную копию
@@ -187,12 +188,13 @@ def get_text_messages(message, df=df, users_list_df=users_list_df):
                     except IOError:
                         input("Для сохранения данных необходимо закрыть файл export_partners")
                 df[mask].to_csv(data_export, sep=';', encoding='windows-1251', index=False, mode='w')
+                df[mask].to_excel(data_export_xlsx, index=False)
 
                 # отправка в чат
                 if sum(mask) > 30:
                     if str(message.from_user.id) in list(users_list_df['users']):
                         bot.send_message(message.from_user.id, 'Больше 30 карт. Ловите файл!')
-                        f = open(data_export, "rb")
+                        f = open(data_export_xlsx, "rb")
                         bot.send_document(message.chat.id, f)
                     else:
                         bot.send_message(message.from_user.id, 'Чтобы получить доступ, отправьте "komus" и вашу почту в чат')
@@ -200,7 +202,7 @@ def get_text_messages(message, df=df, users_list_df=users_list_df):
                 else:
                     bot.send_message(message.from_user.id, print_for_bot)
                     if str(message.from_user.id) in list(users_list_df['users']):
-                        f = open(data_export, "rb")
+                        f = open(data_export_xlsx, "rb")
                         bot.send_document(message.chat.id, f)
                 bot.send_message(message.from_user.id, 'Найдено строк: ' + str(sum(mask)))
 
@@ -238,18 +240,6 @@ def get_text_messages(message, df=df, users_list_df=users_list_df):
                 bot.send_message(message.from_user.id, 'Вы нашли секретную функцию! Но она отключена :-)')
                 logs()
             else:
-
-                # print(df[~mask].to_string(max_colwidth=20, index=False,
-                #                           columns=['Основной клиент (120510)', 'Наименование осн. клиента (1205101)',
-                #                                    'Код клиента (120501)', 'Название клиента (12050102)',
-                #                                    'ИНН (120502)',
-                #                                    'Код сети  (120535)', 'Назв. Бизнес-рег. отд.тек.(1254221)',
-                #                                    'Наим. центра прибыли (1254121)', 'Наименование отдела (1254021)',
-                #                                    'ТРП (120507)', 'Имя ТП (1205041)'],
-                #                           header=['Главкод', 'Наименование ГК', 'Код кл.', 'Название кл.', 'ИНН',
-                #                                   'Код сети',
-                #                                   'БР', 'ЦП', 'ГП', 'ТРП', 'ФИО ТП']))
-                #print('Удалено строк: ', sum(mask))
                 while True:  # проверка, если файл открыт
                     try:
                         df[~mask].to_csv(data_export, sep=';', encoding='windows-1251', index=False, mode='w')
