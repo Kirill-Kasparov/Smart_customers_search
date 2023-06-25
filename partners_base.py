@@ -33,8 +33,6 @@ def filter_txt(txt):    # !Главная функция!
             return gp_partners(txt)
         elif txt[0] == 'сап' or txt[0] == 'ид' or txt[0] == 'sap' or txt[0] == 'id' or txt[0] == 'cfg' or txt[0] == 'bl' or txt[0] == 'ыфз' or txt[0] == 'шв':
             return sap_id_partners(txt)
-        elif txt[0] == 'сап' or txt[0] == 'ид' or txt[0] == 'sap' or txt[0] == 'id' or txt[0] == 'cfg' or txt[0] == 'bl' or txt[0] == 'ыфз' or txt[0] == 'шв':
-            return sap_id_partners(txt)
         elif txt[0] == 'ул' or txt[0] == 'ул.' or txt[0] == 'адрес':
             return street_partners(txt)
         elif txt[0] == 'г' or txt[0] == 'г.' or txt[0] == 'город':

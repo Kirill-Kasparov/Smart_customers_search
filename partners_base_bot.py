@@ -101,9 +101,12 @@ def get_text_messages(message, df=df, users_list_df=users_list_df):
             elif txt[0] == 'сап' or txt[0] == 'ид' or txt[0] == 'sap' or txt[0] == 'id' or txt[0] == 'cfg' or txt[
                 0] == 'bl' or txt[0] == 'ыфз' or txt[0] == 'шв':
                 return sap_id_partners(txt)
-            elif txt[0] == 'сап' or txt[0] == 'ид' or txt[0] == 'sap' or txt[0] == 'id' or txt[0] == 'cfg' or txt[
-                0] == 'bl' or txt[0] == 'ыфз' or txt[0] == 'шв':
-                return sap_id_partners(txt)
+            elif txt[0] == 'ул' or txt[0] == 'ул.' or txt[0] == 'адрес':
+                return street_partners(txt)
+            elif txt[0] == 'г' or txt[0] == 'г.' or txt[0] == 'город':
+                return city_partners(txt)
+            elif txt[0] == '@' or txt[0] == 'e-mail:':
+                return mail_partners(txt)
             elif txt[0] == 'net' or txt[0] == 'sety' or txt[0] == 'туе' or txt[0] == 'сети':
                 return network_partners(txt)
             elif mode == 'equal' and (
@@ -654,6 +657,45 @@ def get_text_messages(message, df=df, users_list_df=users_list_df):
         else:
             bot.send_message(message.from_user.id, 'Не указан SAP id. Пример запроса: сап 3870775 1906719: ')
             logs()
+            return df['Код клиента (120501)'] == '='  # заглушка для False
+    def street_partners(txt):  # поиск по ТП, формат ввода всегда должен начинаться с "ТП"
+        if len(txt) > 1 and (txt[0] == 'ул.' or txt[0] == 'ул' or txt[0] == 'адрес'):
+            txt = ' '.join(txt[1:]).split(',')  # пересобираем список: убираем ТП, соединяем ФИО с разделителем запятая
+            df_tp = df['Фактический адрес (12050116)'].str.lower()  # нижний регистр для поиска
+            mask = df['Код клиента (120501)'] == '='  # заглушка False
+            for name_tp in txt:  # цикл, если указано несколько ТР через запятую
+                mask += df_tp.str.contains(name_tp.strip(), regex=False)  # удаляем лишние пробелы и собираем маску
+            if sum(mask) == 0:  # если нет результата поиска
+                print('Адрес с указанным названием не выявлен')
+            return mask
+        else:
+            print('Запрошенные данные в поле Адрес приведут к ошибке. Пожалуйста, сформулируйте запрос иначе.')
+            return df['Код клиента (120501)'] == '='  # заглушка для False
+    def city_partners(txt):  # поиск по ТП, формат ввода всегда должен начинаться с "ТП"
+        if len(txt) > 1 and (txt[0] == 'г' or txt[0] == 'г.' or txt[0] == 'город'):
+            txt = ' '.join(txt[1:]).split(',')  # пересобираем список: убираем ТП, соединяем ФИО с разделителем запятая
+            df_tp = df['Город факт.  (12050110)'].str.lower()  # нижний регистр для поиска
+            mask = df['Код клиента (120501)'] == '='  # заглушка False
+            for name_tp in txt:  # цикл, если указано несколько ТР через запятую
+                mask += df_tp.str.contains(name_tp.strip(), regex=False)  # удаляем лишние пробелы и собираем маску
+            if sum(mask) == 0:  # если нет результата поиска
+                print('Город с указанным названием не выявлен')
+            return mask
+        else:
+            print('Запрошенные данные в поле Адрес приведут к ошибке. Пожалуйста, сформулируйте запрос иначе.')
+            return df['Код клиента (120501)'] == '='  # заглушка для False
+    def mail_partners(txt):  # поиск по ТП, формат ввода всегда должен начинаться с "ТП"
+        if len(txt) > 1 and (txt[0] == '@' or txt[0] == 'e-mail:'):
+            txt = ' '.join(txt[1:]).split(',')  # пересобираем список: убираем ТП, соединяем ФИО с разделителем запятая
+            df_tp = df['Эл. почта  (12540112)'].str.lower()  # нижний регистр для поиска
+            mask = df['Код клиента (120501)'] == '='  # заглушка False
+            for name_tp in txt:  # цикл, если указано несколько ТР через запятую
+                mask += df_tp.str.contains(name_tp.strip(), regex=False)  # удаляем лишние пробелы и собираем маску
+            if sum(mask) == 0:  # если нет результата поиска
+                print('Почта с указанным названием не выявлена')
+            return mask
+        else:
+            print('Запрошенные данные в поле Адрес приведут к ошибке. Пожалуйста, сформулируйте запрос иначе.')
             return df['Код клиента (120501)'] == '='  # заглушка для False
     def unique_main_partners(txt):  # оставить только главкоды
         mask = df['Код клиента (120501)'] == df['Основной клиент (120510)']
